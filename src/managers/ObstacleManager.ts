@@ -1,13 +1,15 @@
-import { Obstacle } from "../entities/Obstacle";
+import type { IObstacle } from "../entities/IObstacle";
+import { RectObstacle } from "../entities/RectObstacle";
+import { SinuousObstacle } from "../entities/SinuousObstacle";
 
 export class ObstacleManager {
-  obstacles: Obstacle[] = [];
+  obstacles: IObstacle[] = [];
   spawnTimer: number = 0;
-  spawnInterval: number = 1.5; // En secondes
+  spawnInterval: number = 1.5;
   canvasWidth: number;
   canvasHeight: number;
-  obstacleSpeed: number = 150;
-  obstacleColor: string = "black";
+  baseSpeed: number = 600;
+  baseColor: string = "black";
 
   constructor(canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth;
@@ -16,33 +18,53 @@ export class ObstacleManager {
 
   update(deltaTime: number) {
     this.spawnTimer += deltaTime;
-
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
 
-      // Génère un nouvel obstacle
-      const height = 30;
-      const holeWidth = 150;
-      const holeX = Math.random() * (this.canvasWidth - holeWidth);
-      const obstacle = new Obstacle(
-        -height,
-        height,
-        holeX,
-        holeWidth,
-        this.obstacleSpeed,
-        this.obstacleColor,
-        this.canvasWidth
-      );
-      this.obstacles.push(obstacle);
+      // 50% de chance de générer un RectObstacle ou un SinuousObstacle
+      if (Math.random() < 0.5) {
+        // Création d'un obstacle rectangulaire
+        const height = 30;
+        const holeWidth = 120;
+        const holeX = Math.random() * (this.canvasWidth - holeWidth);
+        const obs = new RectObstacle(
+          -height,
+          height,
+          holeX,
+          holeWidth,
+          this.baseSpeed,
+          this.baseColor,
+          this.canvasWidth
+        );
+        this.obstacles.push(obs);
+      } else {
+        // Création d'un obstacle sinueux
+        const height = 300;
+        const pathWidth = 250;
+        const segmentCount = 3;
+        const maxOffsetX = 200;
+        const sinuousObs = new SinuousObstacle(
+          -height,
+          height,
+          pathWidth,
+          segmentCount,
+          maxOffsetX,
+          this.baseSpeed,
+          this.baseColor,
+          this.canvasWidth
+        );
+        this.obstacles.push(sinuousObs);
+      }
     }
 
-    this.obstacles.forEach((obs) => obs.update(deltaTime));
+    // Mise à jour & suppression des obstacles hors écran
+    this.obstacles.forEach((o) => o.update(deltaTime));
     this.obstacles = this.obstacles.filter(
-      (obs) => !obs.isOffScreen(this.canvasHeight)
+      (o) => !o.isOffScreen(this.canvasHeight)
     );
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    this.obstacles.forEach((obs) => obs.draw(ctx));
+    this.obstacles.forEach((o) => o.draw(ctx));
   }
 }

@@ -25,7 +25,7 @@ let gameOver = false;
 let startTime: number = 0;
 
 function initGame() {
-  ball = new Ball(width / 2, height - 100, 20, 400, "red");
+  ball = new Ball(width / 2, height - 100, 20, 1000, "red");
   input = new InputHandler();
   obstacleManager = new ObstacleManager(width, height);
   lastTime = 0;
@@ -87,3 +87,10 @@ function gameLoop(timestamp: number) {
 // Event listeners
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", startGame);
+
+// Ajout d'un écouteur global pour relancer la partie avec "r"
+window.addEventListener("keydown", (e) => {
+  if (e.key === "r") {
+    startGame();
+  }
+});

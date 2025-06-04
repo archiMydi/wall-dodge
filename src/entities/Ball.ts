@@ -31,17 +31,20 @@ export class Ball {
   handleInput(keys: Record<string, boolean>) {
     this.vx = 0;
     this.vy = 0;
-    if (keys["ArrowLeft"]) {
+
+    if (keys["ArrowLeft"] || keys["q"] || keys["Q"]) {
       this.vx = -1;
-    } else if (keys["ArrowRight"]) {
+    } else if (keys["ArrowRight"] || keys["d"] || keys["D"]) {
       this.vx = 1;
     }
-    if (keys["ArrowUp"]) {
+
+    if (keys["ArrowUp"] || keys["z"] || keys["Z"]) {
       this.vy = -1;
-    } else if (keys["ArrowDown"]) {
+    } else if (keys["ArrowDown"] || keys["s"] || keys["S"]) {
       this.vy = 1;
     }
-    // If two axes are pressed simultaneously, normalize the diagonal movement
+
+    // Normalisation du mouvement diagonal
     if (this.vx !== 0 && this.vy !== 0) {
       const diag = Math.sqrt(2) / 2;
       this.vx *= diag;
