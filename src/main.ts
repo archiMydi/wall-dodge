@@ -25,6 +25,12 @@ let gameOver = false;
 let startTime: number = 0;
 
 function initGame() {
+  // Playwright
+  (window as any).ball = ball;
+  (window as any).obstacleManager = obstacleManager;
+  (window as any).canvas = canvas;
+
+  // Initialisation des éléments du jeu
   ball = new Ball(width / 2, height - 100, 20, 1000, "red");
   input = new InputHandler();
   obstacleManager = new ObstacleManager(width, height);
