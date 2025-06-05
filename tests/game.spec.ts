@@ -103,4 +103,47 @@ test.describe("Wall Dodge E2E", () => {
     // Le canvas reste affiché, mais l’écran Game Over doit s’afficher
     await expect(page.locator("#gameOverScreen")).toHaveCSS("display", "flex");
   });
+
+  // Helper pour jouer jusqu'au Game Over naturellement
+  async function playUntilGameOver(page: any) {
+    await page.click("#startButton");
+    // Attend que plusieurs obstacles apparaissent (ex: 3 secondes)
+    await page.waitForTimeout(3000);
+    // Simule quelques esquives (gauche/droite)
+    await page.keyboard.down("ArrowLeft");
+    await page.waitForTimeout(400);
+    await page.keyboard.up("ArrowLeft");
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(400);
+    await page.keyboard.up("ArrowRight");
+    // Laisse le joueur mourir naturellement (on attend que le Game Over apparaisse)
+    await page.waitForSelector("#gameOverScreen", {
+      state: "visible",
+      timeout: 10000,
+    });
+  }
+
+  test("Parcours complet : jouer, esquiver, perdre, voir l’écran de fin, puis recommencer", async ({
+    page,
+  }) => {
+    await playUntilGameOver(page);
+    // Vérifie que l’écran de fin est affiché
+    await expect(page.locator("#gameOverScreen")).toHaveCSS("display", "flex");
+    // Clique sur "Rejouer"
+    await page.click("#restartButton");
+    // Vérifie que le jeu redémarre (canvas visible, écran de fin caché)
+    await expect(page.locator("#gameCanvas")).toHaveCSS("display", "block");
+    await expect(page.locator("#gameOverScreen")).toHaveCSS("display", "none");
+  });
+
+  test("Parcours complet bis : redémarrage avec touche 'r'", async ({
+    page,
+  }) => {
+    await playUntilGameOver(page);
+    await expect(page.locator("#gameOverScreen")).toHaveCSS("display", "flex");
+    // Redémarre avec la touche 'r'
+    await page.keyboard.press("r");
+    await expect(page.locator("#gameCanvas")).toHaveCSS("display", "block");
+    await expect(page.locator("#gameOverScreen")).toHaveCSS("display", "none");
+  });
 });

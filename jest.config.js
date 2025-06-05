@@ -1,23 +1,13 @@
-import { pathsToModuleNameMapper } from "ts-jest";
-import { readFileSync } from "fs";
-import { parse } from "jsonc-parser";
-import { resolve } from "path";
-
-const tsconfig = parse(readFileSync(resolve("tsconfig.json"), "utf8"));
-
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  preset: "ts-jest/presets/default-esm",
+  preset: "ts-jest",
   testEnvironment: "jsdom",
-  extensionsToTreatAsEsm: [".ts"],
-  globals: {
-    "ts-jest": {
-      useESM: true,
-    },
+  roots: ["<rootDir>/src"],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  transform: {
+    "^.+\\.tsx?$": "ts-jest",
   },
-  moduleNameMapper: tsconfig.compilerOptions?.paths
-    ? pathsToModuleNameMapper(tsconfig.compilerOptions.paths, {
-        prefix: "<rootDir>/",
-      })
-    : {},
-  transform: {},
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
 };

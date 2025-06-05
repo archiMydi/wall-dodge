@@ -55,4 +55,18 @@ describe("ObstacleManager", () => {
     manager.update(1); // deltaTime = 1 seconde, speed = 50 → y devient 30
     expect(rect.y).toBeCloseTo(-20 + 50 * 1, 5);
   });
+
+  it("should spawn a RectObstacle when Math.random() < 0.5", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0.3);
+    manager.update(1);
+    expect(manager.obstacles[0]).toBeInstanceOf(RectObstacle);
+    (Math.random as jest.Mock).mockRestore();
+  });
+
+  it("should spawn a SinuousObstacle when Math.random() >= 0.5", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0.7);
+    manager.update(1);
+    expect(manager.obstacles[0]).toBeInstanceOf(SinuousObstacle);
+    (Math.random as jest.Mock).mockRestore();
+  });
 });

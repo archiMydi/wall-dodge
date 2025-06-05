@@ -1,4 +1,3 @@
-// src/entities/Ball.test.ts
 import { Ball } from "../entities/Ball";
 
 describe("Ball", () => {
@@ -58,5 +57,12 @@ describe("Ball", () => {
     const ball2 = new Ball(100, 395, 10, 300, "red");
     ball2.update(1, { ArrowDown: true }, canvasWidth, canvasHeight);
     expect(ball2.y).toBe(canvasHeight - 10);
+  });
+
+  it("should handle negative or zero radius gracefully", () => {
+    const ball = new Ball(100, 100, -10, 100, "red");
+    expect(ball.radius).toBeLessThanOrEqual(0);
+    const zeroBall = new Ball(100, 100, 0, 100, "red");
+    expect(zeroBall.radius).toBe(0);
   });
 });
